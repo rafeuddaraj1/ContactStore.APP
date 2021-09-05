@@ -32,6 +32,9 @@ form.addEventListener('submit', function (e) {
       .then((data) => {
         createTdElement(data.data, (tr) => {
           tbody.appendChild(tr);
+          this.name.value = '';
+          this.email.value = '';
+          this.phone.value = '';
         });
       })
       .catch((err) => console.log(err.message));
@@ -88,30 +91,28 @@ function createTdElement(text, parent) {
     const editName = document.getElementById('edit-name');
     const editEmail = document.getElementById('edit-email');
     const editPhone = document.getElementById('edit-phone');
-    editName.value = tdName.textContent;
-    editEmail.value = tdEmail.textContent;
-    editPhone.value = tdPhone.textContent;
-
+    editName.value = text.name;
+    editEmail.value = text.email;
+    editPhone.value = text.phone;
     const saveBtn = document.getElementById('save-button');
     const dismiss = document.createAttribute('data-bs-dismiss');
     dismiss.value = 'modal';
     saveBtn.setAttributeNode(dismiss);
+
     saveBtn.addEventListener('click', function () {
-      const name = editName.value;
-      const email = editEmail.value;
-      const phone = editPhone.value;
+      const obj = {
+        name: editName.value,
+        email: editEmail.value,
+        phone: editPhone.value,
+      };
       axios // Put Request
-        .put(`${BASE_URL}/${text.id}`, {
-          name,
-          email,
-          phone,
-        })
+        .put(`${BASE_URL}/${text.id}`, obj)
         .then((data) => {
-          console.log(data);
           tdName.innerHTML = data.data.name;
           tdEmail.innerHTML = data.data.email;
           tdPhone.innerHTML = data.data.phone;
-        });
+        })
+        .catch((err) => console.log(err.message));
     });
   });
 
